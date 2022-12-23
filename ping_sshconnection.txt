@@ -1,0 +1,23 @@
+
+---
+- name: Ping command to check connection
+  hosts: all
+  become: yes
+  tasks:
+   - name: test connection
+     ping:
+
+
+   - name: Add the contents to the csv file
+     lineinfile:
+            line:  "{{ansible_distribution}} {{ansible_hostname}} {{ansible_bios_version}} {{ansible_architecture}} {{ansible_bios_date}}"
+            path: "/home/ansible/windows_details1.csv"
+     delegate_to: localhost
+
+   - name: copy public key from controller to remote node
+     authorized_key:
+        user: ansible
+        state: present
+        key: "{{item}}"
+     with_file:
+        - ~/.ssh/id_rsa.pub

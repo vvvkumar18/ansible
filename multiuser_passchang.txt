@@ -1,0 +1,29 @@
+---
+- name: user module demo
+  hosts: demo
+  become: true
+  vars:
+    myname1: "multiuser1"
+    mypassword1: "vvvk123"
+    myname2: "multiuser2"
+    mypassword2: "vvv1234"
+    myname3: "multiuser3"
+    mypassword3: "vvv12345"
+  tasks:
+    - name: change password1
+      ansible.builtin.user:
+        name: "{{myname1}}"
+        state: present
+        password: "{{mypassword1 | password_hash('sha512') }}"
+
+    - name: change password2
+      ansible.builtin.user:
+        name: "{{myname2}}"
+        state: present
+        password: "{{mypassword2 | password_hash('sha512') }}"
+
+    - name: change password3
+      ansible.builtin.user:
+        name: "{{myname3}}"
+        state: present
+        password: "{{mypassword3 | password_hash('sha512') }}"
