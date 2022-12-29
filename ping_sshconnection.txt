@@ -1,23 +1,68 @@
 
 ---
-- name: Ping command to check connection
-  hosts: all
-  become: yes
+- name:   check whether ssh connection is established or not
+  hosts: demo
+  connection: ssh
+  gather_facts:
+  
   tasks:
    - name: test connection
      ping:
+       data: crash
+       register: ping
+       ignore_errors: yes
+   - debug: var=ping
+       
+       
+  - name: if fails
+      shell: echo "task failed"
+      register: fail
+      when: ping is failed
+    - debug: msg="sorry ping failed"
+      when: ping is failed
 
 
-   - name: Add the contents to the csv file
-     lineinfile:
-            line:  "{{ansible_distribution}} {{ansible_hostname}} {{ansible_bios_version}} {{ansible_architecture}} {{ansible_bios_date}}"
-            path: "/home/ansible/windows_details1.csv"
-     delegate_to: localhost
+    - name: create an SSH key for a user
+      user:
+        name: ssh keys
+        generate_ssh_key: yes
+        ssh_key_bits: 2048
+        ssh_key_file: .ssh/id_rsa
+    
 
-   - name: copy public key from controller to remote node
-     authorized_key:
-        user: ansible
+    - name: if success
+      shell: echo "{{ansible_distribution, ansible_hostname, ansible_bios_version, ansible_architecture, ansible_bios_date}}"
+      register: success
+      when: ping is succeeded
+    - debug: var=success.stdout
+      when: ping is succeeded
+
+
+
+    - set_fact:
+        csv_tmp: >
+         {{ansible_distribution}},{{ansible_hostname}},{{ansible_bios_version}},{{ansible_architecture}},{{ansible_bios_date}}
+      register: data
+    - debug: var=data
+
+
+
+    - name: CSV - Add the contents to the csv file
+      lineinfile:
+        dest: /tmp/ping1.csv
+        line:
+          ansible_distribution,ansible_hostname,ansible_bios_version,ansible_architecture,ansible_bios_date
+        create: yes
         state: present
-        key: "{{item}}"
-     with_file:
-        - ~/.ssh/id_rsa.pub
+      delegate_to: localhost
+
+
+
+    - name: CSV - Write information into .csv file
+      lineinfile:
+        insertafter: EOF
+        dest: "/tmp/ping1.csv"
+        line: "{{csv_tmp}}"
+      delegate_to: localhost
+
+ 
