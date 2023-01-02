@@ -1,0 +1,33 @@
+---
+
+- name: First assignment
+  hosts: all
+  gather_facts: false
+  ignore_errors: yes
+
+  tasks:
+
+    - name: if  csv files exists
+      file:
+           path: "/home/ansible/windows_details.csv"
+           state: absent
+      delegate_to: localhost
+
+    - name: :collect facts
+      setup:
+    - name: Show details
+      debug:
+          msg: "{{ansible_distribution}} {{ansible_hostname}} {{ansible_bios_version}} {{ansible_architecture}} {{ansible_bios_date}}"
+
+    - name: CSV - Create file and set the header
+      copy:
+          content: "This is some text file"
+          dest: "/home/ansible/windows_details.csv"
+      delegate_to: localhost
+      run_once: true
+
+    - name: Add the contents to the csv file
+      lineinfile:
+            line:  "{{ansible_distribution}} {{ansible_hostname}} {{ansible_bios_version}} {{ansible_architecture}} {{ansible_bios_date}}"
+            path: "/home/ansible/windows_details.csv"
+      delegate_to: localhost

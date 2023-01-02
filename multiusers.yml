@@ -1,0 +1,23 @@
+---
+- name: user module demo
+  hosts: all
+  become: true
+  vars:
+    password1: vvv123
+    password2: vvv1234
+    password3: vvv12345
+  tasks:
+    - name: user example present
+      ansible.builtin.user:
+        name: multiuser1
+        password: "{{password1}}"
+
+    - name: user example present
+      ansible.builtin.user:
+        name: multiuser2
+        password: "{{password2}}"
+
+    - name: user example present
+      ansible.builtin.user:
+        name: multiuser3
+        password: "{{password3}}"
