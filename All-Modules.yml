@@ -1,0 +1,124 @@
+Database modules:
+
+
+1)mongodb parameter: Change an administrative parameter on a MongoDB server
+
+                     add (or) remove user from mongodb
+
+2)mysql - add (or) remove a user from mysql and remote host
+  
+      client_cert: public key certificate
+      client_key: private key
+  - gather information
+
+
+
+
+
+  
+Notification module:
+ 
+
+
+slack:
+
+send message via slack 
+
+---
+
+- hosts: localhost
+  gather_facts: yes
+  connection: local
+
+  tasks:
+
+  - name: Notify
+    slack:
+      token: T01867T26CV/B04GZNSNSEB/RJDVtGkvpMm1pUU3SzcKOSQ5
+      msg: '{{inventory_hostname}} Hi Kumar'
+      icon_url: https://bsmedia.business-standard.com/_media/bs/img/article/2021-05/03/full/1620057171-8777.jpg
+      channel: 'new-channer'
+    delegate_to: localhost
+
+
+  - name: insert a color bar in front of the message for visibility purposes and use the default webhook icon and name configured in Slack
+    slack:
+      token: T01867T26CV/B04GZNSNSEB/RJDVtGkvpMm1pUU3SzcKOSQ5
+      msg: '{{ inventory_hostname }} is alive!'
+
+
+
+file modules
+ 
+read_csv:
+
+# Example CSV file with header
+#
+#   name,uid,gid
+#   dag,500,500
+#   jeroen,501,500
+
+
+---
+
+- hosts: localhost
+  gather_facts: false
+
+  tasks:
+    - name: Read users from CSV file and return a dictionary
+      read_csv:
+        path: user.csv
+        key: name
+      register: users
+      delegate_to: localhost
+
+    - debug:
+         msg: 'User {{ users.dict.dag.name }} has UID {{ users.dict.dag.uid }} and GID {{ users.dict.dag.gid }}'
+
+
+
+
+
+utilities modules:
+
+   debug
+   fail
+   import task and include task
+
+---
+- hosts: localhost
+  tasks:
+
+    - name: Include a demo
+      import_tasks: count1.yml
+
+    - name: import demo
+      include_tasks: count1.yml
+ 
+
+ count1.yml
+
+ ---
+- name: demo task
+  debug: msg="This is demo for include and import"
+
+
+
+
+
+pause module
+
+
+
+---
+
+- hosts: localhost
+  gather_facts: false
+
+  tasks:
+    - name: pause for 1 min
+      pause:
+        minutes: 1
+
+
+
