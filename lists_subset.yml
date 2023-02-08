@@ -1,0 +1,19 @@
+---
+ - name: Collects variable from variables.yml file
+   hosts: localhost
+   vars:
+      a: [1,2,3,4,5]
+      b: [2,3]
+   tasks:
+    - debug:
+        msg: "A includes B"
+      when: a is superset(b)
+
+    - debug:
+        msg: "B is included in A"
+      when: b is subset(a)
+
+
+
+
+
