@@ -1,0 +1,38 @@
+- hosts: demo
+  vars:
+         - port: 80
+  tasks:
+         - name: "installing httpd"
+           package:
+                 name: "httpd"
+                 state: present
+
+
+         - name: " creating directory"
+           file:
+               path: "/var/www/kumar"
+               state: directory
+
+
+         - name: "copying config file"
+           template:
+               src: "web.conf"
+               dest: "/etc/httpd/conf.d/web.conf"
+           notify: "httpd service"
+
+        
+         - name: " creating webpage"
+           copy:
+                 content: "Handler Configuration Using Ansible Playbook"
+                 dest: "/var/www/kumar/index.html"
+
+         - name: "starting services"
+           service:
+                 name: "httpd"
+                 state: started
+           handlers:
+         - name: "httpd service"
+           service:
+                   name: "httpd"
+                   state: restarted
+
