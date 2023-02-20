@@ -1,0 +1,24 @@
+---
+- name: URI module demo
+  hosts: all
+  become: false
+  vars:
+    server: "https://reqres.in"
+    endpoint: "/api/users"
+  tasks:
+         - name: Create
+           ansible.builtin.uri:
+             url: "{{ server }}{{ endpoint }}"
+             method: POST
+             body_format: json
+             body: '{
+               "name": "morpheus",
+               "job": "leader"
+             }'
+             status_code: 201
+             timeout: 30
+           register: result
+
+         - name: Data
+           ansible.builtin.debug:
+             var: result.json.name, result.json.createdAt

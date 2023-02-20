@@ -1,0 +1,15 @@
+---
+- name: URI module demo
+  hosts: all
+
+  tasks:
+         - name: Create
+           ansible.builtin.uri:             
+             url: http://httpbin.org/get
+             return_content: yes
+             method: GET
+           register: result
+
+         - name: debug
+           debug:
+             var: result.content
